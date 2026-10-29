@@ -40,7 +40,7 @@ body.bare .shot { margin-top: -11.2%; }  /* real phone shows its own status bar 
 /* bottom nav cut from the screenshot, pinned so it stays visible while scrolling (units: 1/427 of screen width) */
 .navfix { --u: calc(100cqw / 427); position: absolute; left: 0; right: 0; bottom: calc(46 * var(--u) + env(safe-area-inset-bottom, 0px)); height: calc(92 * var(--u)); z-index: 3; pointer-events: none; }
 .navwrap { position: absolute; inset: 0; container-type: inline-size; pointer-events: none; }
-/* v3 homepage snow: light, below the live preview only, fades out by itself (25Q4 learn session) */
+/* v3 homepage snow: light, falls from the top, fades out by itself (25Q4 learn session) */
 .snow { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; transition: opacity 1.6s; }
 .snow.off { opacity: 0; }
 .navfix .pill { position: absolute; left: calc(42 * var(--u)); top: calc(42 * var(--u)); width: calc(348 * var(--u)); height: calc(50 * var(--u)); border-radius: calc(25 * var(--u));
@@ -283,7 +283,7 @@ function startSnow() {
   if (!HOME_SNOW || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const dpr = window.devicePixelRatio || 1, W = home.clientWidth, H = home.clientHeight;
   snowCv.width = W * dpr; snowCv.height = H * dpr; snowCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  flakes = Array.from({ length: 30 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 2.4 + Math.random() * 2.6,
+  flakes = Array.from({ length: 30 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 1.8 + Math.random() * 2.0,
     vy: 18 + Math.random() * 22, drift: Math.random() * Math.PI * 2, sway: 8 + Math.random() * 14 }));
   snowCv.classList.remove("off");
   cancelAnimationFrame(snowRAF); clearTimeout(snowFade);
@@ -294,8 +294,8 @@ function startSnow() {
     if (snowCv.width !== Math.round(W * dpr) || snowCv.height !== Math.round(H * dpr)) {
       snowCv.width = Math.round(W * dpr); snowCv.height = Math.round(H * dpr); snowCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    // keep the live preview clear: snow only appears below it
-    const hot = $("openLive").getBoundingClientRect(), top = Math.max(0, hot.bottom - home.getBoundingClientRect().top);
+    // snow falls from the top of the screen, like last year's holiday theme
+    const top = 0;
     snowCtx.clearRect(0, 0, W, H);
     for (const f of flakes) {
       f.y += f.vy * dt; f.drift += dt * 0.8;
@@ -304,7 +304,7 @@ function startSnow() {
       const fadeIn = Math.min(1, Math.max(0, (f.y - top) / 40));
       if (fadeIn <= 0) continue;
       snowCtx.globalAlpha = 0.95 * fadeIn;
-      drawFlake(x, f.y, f.r * 1.9, f.drift * 0.6);
+      drawFlake(x, f.y, f.r * 1.7, f.drift * 0.6);
     }
     snowRAF = requestAnimationFrame(tick);
   };
